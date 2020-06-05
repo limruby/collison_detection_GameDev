@@ -13,9 +13,7 @@ import java.util.Random;
  *
  * @author user
  */
-public class Asteroid implements EntityB{
-    private double x;
-    private double y;
+public class Asteroid extends GameObject implements EntityB{   
     Random r= new Random();
     private Game game;
     private Controller c;
@@ -26,30 +24,32 @@ public class Asteroid implements EntityB{
     
     
     public Asteroid(double x, double y, Textures tex, Controller c, Game game){
-    this.x =x; 
-    this.y =y;
+    super(x,y);
     this.tex = tex;   
     this.c =c;
     this.game =game;
 }
+    @Override
     public void tick(){
        y+=speed;  //asteriod coming down with different speed
        
-       if(y>(Game.HEIGHT*Game.SCALE)){  //if asteriod exceed window 
+       if(y>Game.HEIGHT*Game.SCALE){  //if asteriod exceed window 
            speed = r.nextInt(3)+1;
            x =r.nextInt(640); //jumps to top with random x position
            y=-10;  
             
        }
-       //what happen if collision happens
-      if(Physics.Collision(this, game.ea)){// if asteriod collide with objects in Entity A
-           c.removeEntity(this);      
-       }
+       c.checkCollisions();     
       
-     
     }
+    @Override
     public void render (Graphics g){
         g.drawImage(tex.asteroid, (int)x, (int)y, null);      
+    }
+    // Encapsulate the asteriod with rectangle to detect collision
+    @Override
+     public Rectangle getBounds(){
+        return new Rectangle((int)x, (int)y, 32, 32);
     }
     
     @Override
@@ -69,12 +69,8 @@ public class Asteroid implements EntityB{
     public void setY(double y){
         this.y = y;
     }
+        
     
-    // Encapsulate the asteriod with rectangle to detect collision
-    @Override
-     public Rectangle getBounds(){
-        return new Rectangle((int)x, (int)y, 10, 10);
-    }
     
 }
 

@@ -8,10 +8,8 @@ package game;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
-public class Bullet implements EntityA {
-    
-    private double x;
-    private double y;
+public class Bullet extends GameObject implements EntityA {
+   
     
     private Game game;
     private Textures tex;
@@ -19,27 +17,23 @@ public class Bullet implements EntityA {
     
     
     public Bullet(double x, double y, Textures tex, Game game){
-    this.x =x; 
-    this.y =y;
+    super(x,y);
     this.tex = tex;   
     this.game=game;
 }
     public void tick(){
-       y-=10;
-       if(y>(Game.HEIGHT*Game.SCALE)){  //if asteriod exceed window 
-           c.removeEntity(this);
-       }
-     
-       
-       //what happen if collision happens
-       if(Physics.Collision(this, game.eb)){
-           System.out.println("Collision detected! Asteriod has been shot down!"); //Check console output
-       }
-        
+       y-=10;   
+         
+    }
+    
+    @Override
+    public Rectangle getBounds() {
+        return new Rectangle((int)x, (int)y, 32, 32);
     }
     public void render (Graphics g){
         g.drawImage(tex.bullet, (int)x, (int)y, null);      
     }
+    
     
     public double getX(){
         return x;
@@ -57,9 +51,6 @@ public class Bullet implements EntityA {
         this.y = y;
     }
 
-    @Override
-    public Rectangle getBounds() {
-        return new Rectangle((int)x, (int)y, 10, 10);
-    }
+    
 
 }
