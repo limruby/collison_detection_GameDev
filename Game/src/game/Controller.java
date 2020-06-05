@@ -24,7 +24,7 @@ public class Controller {
     private Textures tex;
     Random r = new Random();
     private Game game;
-    private boolean collision;
+    
   
     public Controller(Textures tex, Game game){
         this.tex=tex;
@@ -41,13 +41,18 @@ public class Controller {
         //Class A
         for(int i=0; i<ea.size();i++){
             entA =ea.get(i);            
-            entA.tick();
+            entA.tick();  
+            //remove bullet after offscreen
+            if(entA.getY()<0){
+                this.removeEntity(entA);
+            }
         }
         //Class B
         for(int i=0; i<eb.size();i++){
             entB =eb.get(i);
             entB.tick();
         }
+        
     }
     
    public void render(Graphics g){
@@ -70,21 +75,31 @@ public class Controller {
            ea.remove(block);
        }
    public void addEntity(EntityB block){
-           eb.add(block);
-           
+           eb.add(block);          
        }
    public void removeEntity(EntityB block){
            eb.remove(block);
        }
-   
+   public void checkCollisions(){
+        for(int i = 0; i< ea.size(); i++){
+            entA = ea.get(i);
+            for(int j = 0; j < eb.size(); j++){
+                entB = eb.get(j);
+                if(entA.getBounds().intersects(entB.getBounds())){
+                    System.out.println("collision detected! Asteroid destroyed!");
+                    removeEntity(entA);
+                    removeEntity(entB);
+                }
+            }
+        }
+    }
    //Show the list of objects in Entity A & Entity B
    public LinkedList<EntityA> getEntityA(){
        return ea;
    }
    public LinkedList<EntityB> getEntityB(){
        return eb;
-   }
-  
+   } 
 }
    
   

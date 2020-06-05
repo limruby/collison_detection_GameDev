@@ -1,7 +1,6 @@
 package game;
 
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
@@ -14,9 +13,10 @@ import javax.swing.JFrame;
 public class Game extends Canvas implements Runnable { //execute code in the thread
 
     // Creating JFrame as the game window
-    public static final int WIDTH =500;  //Constant width for the frame
-    public static final int HEIGHT =WIDTH /12*9; //Constant height for the frame
-    public static final int SCALE =2;  // scale for resizing
+    private static final long serialVersionUID =1L;
+    public static final int WIDTH =320;  //Constant width for the frame
+    public static final int HEIGHT =WIDTH /12*9; //Aspect ratio for height
+    public static final int SCALE =2;  // scale factor
     public final String TITLE = "Collision Detection";  // Title of the window
     
     private boolean running =false;
@@ -47,7 +47,12 @@ public class Game extends Canvas implements Runnable { //execute code in the thr
         this.asteriod_destroy = asteriod_destroy;
     }
     
-   
+    private Player p; //initiate player
+    private Controller c; //initiate game controls
+    private Textures tex; //store asset images
+    
+    public LinkedList<EntityA> ea;
+    public LinkedList<EntityB> eb;
 
     
     //Initialization
@@ -58,25 +63,21 @@ public class Game extends Canvas implements Runnable { //execute code in the thr
         try{
             spriteSheet = load.loadImage("/sprite_sheet_nobg.png"); //throw exception if error occurs
         }catch (IOException e){
+            e.printStackTrace();
         }
-        addKeyListener(new Movement(this)); //Add keylistener for arrow keys
+        
         tex = new Textures(this);
         p = new Player (200,200, tex);  //parameters as the window location
         c= new Controller(tex, this);
         
-        c.addAsteriod(asteriod_count);
-        ea = c.getEntityA();
-        eb =c.getEntityB();
+        this.addKeyListener(new Movement(this)); //Add keylistener for arrow keys
+        c.addAsteriod(asteriod_count); //add asteriod in the game
+        ea = c.getEntityA(); 
+        eb = c.getEntityB();
         
         
     }
-    
-    private Player p; //initiate player
-    private Controller c; //initiate game controls
-    private Textures tex; //store asset images
-    
-    public LinkedList<EntityA> ea;
-    public LinkedList<EntityB> eb;
+     
     
     //Synchronization to prevent thread error//
     private synchronized void start(){ 
@@ -136,7 +137,6 @@ public class Game extends Canvas implements Runnable { //execute code in the thr
     
     private void tick(){ //Constant updates of the game
         p.tick();
-   //    a.tick();
         c.tick();
     }
     
@@ -159,61 +159,44 @@ public class Game extends Canvas implements Runnable { //execute code in the thr
     public void keyPressed(KeyEvent e){
         // check for arrow key pressed
         // use getKeyCode to get key pressed    
-          int keyCode = e.getKeyCode();
+        int keyCode = e.getKeyCode();
          
-        switch (keyCode) {
-            case KeyEvent.VK_RIGHT:
-                //Move player to right
-                p.setVelX(5);
-                break;
-            case KeyEvent.VK_LEFT:
-                //Move player to left
-                p.setVelX(-5);
-                break;
-            case KeyEvent.VK_DOWN:
-                ////Move player to down
+        if(keyCode == KeyEvent.VK_RIGHT){
+            //Move player to right
+            p.setVelX(5);
+        }else if(keyCode == KeyEvent.VK_LEFT){
+            //Move player to left
+            p.setVelX(-5);
+        }else if(keyCode == KeyEvent.VK_DOWN){
+             ////Move player to down
                 p.setVelY(5);
-                break;
-            case KeyEvent.VK_UP:
-                //Move player to up
+        }else if(keyCode == KeyEvent.VK_UP){
+             ////Move player to down
                 p.setVelY(-5);
-                break;
-            case KeyEvent.VK_SPACE:
-          //Fire bullet by pressing spacebar
-                c.addEntity(new Bullet(p.getX(),p.getY(),tex, this));
-                break;
-            default:
-               break;
+        }else if(keyCode == KeyEvent.VK_SPACE && !is_shooting){
+            //Fire bullet by pressing spacebar
+            c.addEntity(new Bullet(p.getX(),p.getY(),tex, this));
         }
-        
+    }         
            
-    }
     public void keyReleased(KeyEvent e){
+        //when key is released, control stops
          int keyCode = e.getKeyCode();
          
-        switch (keyCode) {
-            case KeyEvent.VK_RIGHT:
-                //Move player to right
-                p.setVelX(0);
-                break;
-            case KeyEvent.VK_LEFT:
-                //Move player to left
-                p.setVelX(0);
-                break;
-            case KeyEvent.VK_DOWN:
-                ////Move player to down
+        if(keyCode == KeyEvent.VK_RIGHT){
+            
+            p.setVelX(0);
+        }else if(keyCode == KeyEvent.VK_LEFT){
+            
+            p.setVelX(0);
+        }else if(keyCode == KeyEvent.VK_DOWN){
+             
                 p.setVelY(0);
-                break;
-            case KeyEvent.VK_UP:
-                //Move player to up
+        }else if(keyCode == KeyEvent.VK_UP){
+            
                 p.setVelY(0);
-                break;
-                 case KeyEvent.VK_SPACE:
-          //Fire bullet by pressing spacebar
-                c.removeEntity(p);
-                break;
-            default:
-               break;
+        }else if(keyCode == KeyEvent.VK_SPACE){           
+            is_shooting = false;        
         }
     }
     

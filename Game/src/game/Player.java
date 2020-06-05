@@ -8,10 +8,8 @@ package game;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
-public class Player implements EntityA {
-    
-    private double x;
-    private double y;
+public class Player extends GameObject implements EntityA  {
+        
     private Textures tex;
     private Game game;
     private Controller c;
@@ -22,8 +20,7 @@ public class Player implements EntityA {
       
     //initialize events in player class
     public Player (double x, double y, Textures tex){
-        this.x =x; 
-        this.y =y;
+        super(x,y);
         this.tex =tex;
     }
     
@@ -47,6 +44,10 @@ public class Player implements EntityA {
     public void render (Graphics g){
         g.drawImage(tex.player, (int)x, (int)y, null); 
     }
+    // Encapsulate the player with rectangle to detect collision
+    public Rectangle getBounds(){
+        return new Rectangle((int)x, (int)y, 32, 32);
+    }
     
     public double getX(){
         return x;
@@ -69,9 +70,6 @@ public class Player implements EntityA {
     public void setVelY(double velY){
         this.velY = velY;
     }
-    // Encapsulate the player with rectangle to detect collision
-    public Rectangle getBounds(){
-        return new Rectangle((int)x, (int)y, 10, 10);
-    }
+    
     
 }
